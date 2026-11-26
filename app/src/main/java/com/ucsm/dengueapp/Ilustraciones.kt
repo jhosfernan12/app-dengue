@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
-// Ilustraciones propias del proyecto, dibujadas como vectores (res/drawable/img_*.xml).
+// Ilustraciones propias del proyecto (termómetro, criadero), dibujadas como vectores (res/drawable/img_*.xml).
 // Se muestran sobre un fondo claro fijo para que se vean bien también en modo oscuro.
 
 /** Franja con una ilustración centrada, para la parte de arriba de las pantallas informativas. */
@@ -27,8 +27,8 @@ fun Ilustracion(@DrawableRes recurso: Int, descripcion: String) {
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 150.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Brush.linearGradient(listOf(Color(0xFFE0F2F1), Color(0xFFE0F2FE)))),
+            .clip(RoundedCornerShape(24.dp))
+            .background(Brush.linearGradient(listOf(Color(0xFFE3F0FE), Color(0xFFCFE4FB)))),
         contentAlignment = Alignment.Center
     ) {
         Image(

@@ -12,6 +12,23 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.ucsm.dengueapp.ui.theme.Azul500
+import com.ucsm.dengueapp.ui.theme.Azul700
+import com.ucsm.dengueapp.ui.theme.Cielo
+import com.ucsm.dengueapp.ui.theme.LocalCambiarTema
+import com.ucsm.dengueapp.ui.theme.LocalModoOscuro
+import com.ucsm.dengueapp.ui.theme.NaranjaFebril
+import com.ucsm.dengueapp.ui.theme.VerdeFuerte
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -73,6 +90,113 @@ fun textoDe(secciones: List<SeccionInfo>): String =
 
 // ---------- Inicio ----------
 
+/** Parte de arriba de la pantalla de inicio: degradado azul con la onda, nombre, mensaje y foto del mosquito. */
+@Composable
+fun HeroInicio() {
+    val oscuro = LocalModoOscuro.current
+    val cambiarTema = LocalCambiarTema.current
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(OndaInferior)
+            .background(degradadoAzul(oscuro))
+            .burbujas()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 64.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    NOMBRE_APP,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+                IconButton(onClick = { cambiarTema(!oscuro) }) {
+                    Icon(
+                        if (oscuro) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                        contentDescription = if (oscuro) "Cambiar a modo claro" else "Cambiar a modo oscuro",
+                        tint = Color.White
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        "Aprende y previene el dengue",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White
+                    )
+                    Text(
+                        "Información confiable, prevención en casa y herramientas para tu familia.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.92f)
+                    )
+                }
+                FotoCircular(R.drawable.img_mosquito_foto, 100.dp, "Fotografía de un mosquito Aedes")
+            }
+        }
+    }
+}
+
+@Composable
+private fun TarjetaAncha(
+    titulo: String,
+    detalle: String,
+    icono: ImageVector,
+    acento: Color,
+    onClick: () -> Unit
+) {
+    val c = MaterialTheme.colorScheme
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(containerColor = c.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        border = BorderStroke(1.dp, c.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(46.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Brush.linearGradient(listOf(lerp(acento, Color.White, 0.28f), acento))),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icono, contentDescription = null, tint = Color.White, modifier = Modifier.size(26.dp))
+            }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(titulo, style = MaterialTheme.typography.titleSmall, color = c.onSurface)
+                Text(detalle, style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
+            }
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = c.onSurfaceVariant
+            )
+        }
+    }
+}
+
 @Composable
 fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) -> Unit) {
     val context = LocalContext.current
@@ -80,127 +204,199 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
     val intro = "Aplicativo educativo. No diagnostica dengue ni reemplaza la evaluación de un profesional de salud. " +
             "Si tienes fiebre y alguna señal de alarma, acude de inmediato a un establecimiento de salud."
 
-    Pagina(NOMBRE_APP, null) {
-        Cabecera(
-            "Aprende y previene el dengue",
-            "Información confiable, prevención en casa y herramientas para tu familia.",
-            imagen = R.drawable.img_mosquito
-        )
+    Pagina(NOMBRE_APP, null, conBarraSuperior = false) {
+        HeroInicio()
 
-        Card(
-            onClick = { onIr(Pantalla.Orientacion) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = AlertaRoja),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            // ----- Qué hago ahora (lo más urgente, primero) -----
+            Card(
+                onClick = { onIr(Pantalla.Orientacion) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Icon(Icons.Filled.LocalHospital, contentDescription = null, tint = Color.White, modifier = Modifier.size(36.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        "¿Tengo fiebre? ¿Qué hago ahora?",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        "Guía rápida: cuándo acudir al centro de salud",
-                        color = Color.White.copy(alpha = 0.92f),
-                        style = MaterialTheme.typography.bodyMedium
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Brush.linearGradient(listOf(Color(0xFFB71C1C), Color(0xFFE53935))))
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color.White.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Filled.LocalHospital, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+                    }
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            "¿Tengo fiebre? ¿Qué hago ahora?",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            "Guía rápida: cuándo acudir al centro de salud",
+                            color = Color.White.copy(alpha = 0.92f),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.White)
+                }
+            }
+
+            // ----- Escanear mosquito -----
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Brush.linearGradient(listOf(Azul500, Cielo)))
+                    .burbujas()
+                    .clickable { onIr(Pantalla.Mosquito) }
+                    .padding(18.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    FotoCircular(R.drawable.img_mosquito_foto, 72.dp, null)
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Etiqueta("EXPERIMENTAL", Color.White.copy(alpha = 0.25f), Color.White)
+                        Text(
+                            "Identifica un mosquito",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White
+                        )
+                        Text(
+                            "Toma una foto y el modelo te dice si parece un Aedes.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.95f)
+                        )
+                    }
+                    Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+                }
+            }
+
+            // ----- Explora -----
+            TituloSeccion("Explora")
+
+            Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Baldosa("Información sobre el dengue", "Qué es y síntomas", Icons.Filled.Info, Azul700, Modifier.weight(1f)) { onIr(Pantalla.InfoGeneral) }
+                Baldosa("Signos de alarma", "Cuándo acudir ya", Icons.Filled.Warning, AlertaRoja, Modifier.weight(1f)) { onIr(Pantalla.SignosAlarma) }
+            }
+            Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Baldosa("Etapas de la enfermedad", "Fiebre, crítica y recuperación", Icons.Filled.Timeline, Color(0xFF5C6BC0), Modifier.weight(1f)) { onIr(Pantalla.Etapas) }
+                Baldosa("Dengue vs. zancudo común", "Cómo diferenciarlos", Icons.Filled.BugReport, Color(0xFF0288D1), Modifier.weight(1f)) { onIr(Pantalla.Comparacion) }
+            }
+            Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Baldosa("Prevención en el hogar", "Elimina los criaderos", Icons.Filled.Shield, VerdeFuerte, Modifier.weight(1f)) { onIr(Pantalla.Prevencion) }
+                Baldosa("Revisa tu casa", "Lista de verificación", Icons.Filled.Checklist, Color(0xFF00897B), Modifier.weight(1f)) { onIr(Pantalla.Checklist) }
+            }
+            Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Baldosa("Videos educativos", "Aprende mirando", Icons.Filled.PlayArrow, Azul500, Modifier.weight(1f)) { onIr(Pantalla.ListaVideos) }
+                Baldosa("Mi rutina semanal", "Recordatorios", Icons.Filled.Notifications, Color(0xFF7E57C2), Modifier.weight(1f)) { onIr(Pantalla.Rutina) }
+            }
+
+            TarjetaAncha(
+                "Mapa comunitario",
+                "Mira y reporta criaderos cerca de ti",
+                Icons.Filled.Place,
+                NaranjaFebril
+            ) { onIr(Pantalla.Mapa) }
+
+            // ----- Galería (vista previa) -----
+            TituloSeccion("Galería", "Ver todo") { onIr(Pantalla.Galeria) }
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                ContenidoGaleria.fotos.take(6).forEach { img ->
+                    Image(
+                        painter = painterResource(img.recurso),
+                        contentDescription = img.titulo,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(112.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .clickable { onIr(Pantalla.Galeria) }
                     )
                 }
             }
-        }
 
-        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Baldosa("Información sobre el dengue", Icons.Filled.Info, c.primaryContainer, c.onPrimaryContainer, Modifier.weight(1f)) { onIr(Pantalla.InfoGeneral) }
-            Baldosa("Signos de alarma", Icons.Filled.Warning, c.errorContainer, c.onErrorContainer, Modifier.weight(1f)) { onIr(Pantalla.SignosAlarma) }
-        }
-        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Baldosa("Etapas de la enfermedad", Icons.Filled.Timeline, c.tertiaryContainer, c.onTertiaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Etapas) }
-            Baldosa("Dengue vs. zancudo común", Icons.Filled.BugReport, c.secondaryContainer, c.onSecondaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Comparacion) }
-        }
-        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Baldosa("Prevención en el hogar", Icons.Filled.Shield, c.primaryContainer, c.onPrimaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Prevencion) }
-            Baldosa("Revisa tu casa", Icons.Filled.Home, c.tertiaryContainer, c.onTertiaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Checklist) }
-        }
-        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Baldosa("Videos educativos", Icons.Filled.PlayArrow, c.secondaryContainer, c.onSecondaryContainer, Modifier.weight(1f)) { onIr(Pantalla.ListaVideos) }
-            Baldosa("Mi rutina semanal", Icons.Filled.Notifications, c.primaryContainer, c.onPrimaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Rutina) }
-        }
-        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Baldosa("Mapa comunitario", Icons.Filled.Place, c.secondaryContainer, c.onSecondaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Mapa) }
-            Baldosa("Identificar mosquito (experimental)", Icons.Filled.CameraAlt, c.tertiaryContainer, c.onTertiaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Mosquito) }
-        }
-
-        Card(
-            onClick = { onIr(Pantalla.Encuesta) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = c.primaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            // ----- Encuesta -----
+            Card(
+                onClick = { onIr(Pantalla.Encuesta) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = c.primaryContainer),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
-                Icon(Icons.Filled.RateReview, contentDescription = null, tint = c.onPrimaryContainer, modifier = Modifier.size(32.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        "Tu opinión nos ayuda a mejorar",
-                        color = c.onPrimaryContainer,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        "Responde la encuesta de satisfacción (anónima, 2 minutos)",
-                        color = c.onPrimaryContainer,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-
-        BotonEscuchar(intro)
-        AyudaVoz()
-
-        Card(
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = c.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Tamaño de letra", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("A" to 1f, "A+" to 1.3f, "A++" to 1.6f).forEach { (etiqueta, valor) ->
-                        if (escala == valor) {
-                            Button(onClick = { onEscala(valor) }, modifier = Modifier.weight(1f)) { Text(etiqueta) }
-                        } else {
-                            OutlinedButton(onClick = { onEscala(valor) }, modifier = Modifier.weight(1f)) { Text(etiqueta) }
-                        }
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Icon(Icons.Filled.RateReview, contentDescription = null, tint = c.primary, modifier = Modifier.size(32.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            "Tu opinión nos ayuda a mejorar",
+                            color = c.onPrimaryContainer,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            "Responde la encuesta de satisfacción (anónima, 2 minutos)",
+                            color = c.onPrimaryContainer,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
-                HorizontalDivider()
-                Text("Tu actividad", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Etiqueta("${UsageLog.get(context, UsageLog.VIDEOS)} videos", c.primaryContainer, c.onPrimaryContainer)
-                    Etiqueta("${UsageLog.get(context, UsageLog.REVISIONES)} revisiones", c.tertiaryContainer, c.onTertiaryContainer)
-                    Etiqueta("${UsageLog.get(context, UsageLog.FOTOS)} fotos", c.secondaryContainer, c.onSecondaryContainer)
+            }
+
+            BotonEscuchar(intro)
+            AyudaVoz()
+
+            Card(
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = c.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                border = BorderStroke(1.dp, c.outlineVariant)
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("Tamaño de letra", style = MaterialTheme.typography.titleSmall)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf("A" to 1f, "A+" to 1.3f, "A++" to 1.6f).forEach { (etiqueta, valor) ->
+                            if (escala == valor) {
+                                Button(onClick = { onEscala(valor) }, modifier = Modifier.weight(1f)) { Text(etiqueta) }
+                            } else {
+                                OutlinedButton(onClick = { onEscala(valor) }, modifier = Modifier.weight(1f)) { Text(etiqueta) }
+                            }
+                        }
+                    }
+                    HorizontalDivider()
+                    Text("Tu actividad", style = MaterialTheme.typography.titleSmall)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Etiqueta("${UsageLog.get(context, UsageLog.VIDEOS)} videos", c.primaryContainer, c.onPrimaryContainer)
+                        Etiqueta("${UsageLog.get(context, UsageLog.REVISIONES)} revisiones", c.tertiaryContainer, c.onTertiaryContainer)
+                        Etiqueta("${UsageLog.get(context, UsageLog.FOTOS)} fotos", c.secondaryContainer, c.onSecondaryContainer)
+                    }
                 }
             }
-        }
 
-        Text(
-            "Aplicativo educativo. No diagnostica dengue ni reemplaza la evaluación de un profesional de salud. " +
-                    "Modelo de imágenes entrenado con MosqVision-3K (Masud, Md. A., 2024, Zenodo, licencia CC BY 4.0).",
-            style = MaterialTheme.typography.bodySmall,
-            color = c.onSurfaceVariant
-        )
+            Text(
+                "Aplicativo educativo. No diagnostica dengue ni reemplaza la evaluación de un profesional de salud. " +
+                        "Modelo de imágenes entrenado con MosqVision-3K (Masud, Md. A., 2024, Zenodo, licencia CC BY 4.0).",
+                style = MaterialTheme.typography.bodySmall,
+                color = c.onSurfaceVariant
+            )
+            Spacer(Modifier.height(8.dp))
+        }
     }
 }
 
@@ -399,7 +595,7 @@ fun PantallaOrientacion(onVolver: () -> Unit) {
 @Composable
 fun PantallaInfoGeneral(onVolver: () -> Unit) {
     Pagina("Información sobre el dengue", onVolver) {
-        Ilustracion(R.drawable.img_mosquito, "Ilustración de un mosquito Aedes, el que transmite el dengue")
+        FotoBanner(R.drawable.img_mosquito_foto, "Fotografía de un mosquito Aedes, el que transmite el dengue", pie = "Aedes aegypti, el mosquito que transmite el dengue")
         BotonEscuchar(textoDe(Contenido.informacionGeneral))
         SeccionInformativa(Contenido.informacionGeneral)
     }
@@ -430,15 +626,20 @@ fun PantallaPrevencion(onVolver: () -> Unit) {
 fun PantallaVideos(onAbrir: (Video) -> Unit, onVolver: () -> Unit) {
     val c = MaterialTheme.colorScheme
     Pagina("Videos educativos", onVolver) {
+        Cabecera(
+            "Aprende con videos",
+            "Videos oficiales de la OPS/OMS sobre síntomas, signos de alarma, cuidados y prevención."
+        )
         Contenido.videos.groupBy { it.categoria }.forEach { (categoria, lista) ->
-            Text(categoria, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            TituloSeccion(categoria)
             lista.forEach { v ->
                 Card(
                     onClick = { onAbrir(v) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(22.dp),
                     colors = CardDefaults.cardColors(containerColor = c.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                    border = BorderStroke(1.dp, c.outlineVariant)
                 ) {
                     Row(
                         modifier = Modifier.padding(14.dp),
@@ -446,15 +647,19 @@ fun PantallaVideos(onAbrir: (Video) -> Unit, onVolver: () -> Unit) {
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         Box(
-                            modifier = Modifier.size(48.dp).background(c.primary, CircleShape),
+                            modifier = Modifier
+                                .size(52.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Brush.linearGradient(listOf(Azul500, Azul700))),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = c.onPrimary)
+                            Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(30.dp))
                         }
-                        Column(Modifier.weight(1f)) {
-                            Text(v.titulo, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(v.titulo, style = MaterialTheme.typography.titleSmall, color = c.onSurface)
                             Text("Fuente: ${v.fuente}", style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
                         }
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = c.onSurfaceVariant)
                     }
                 }
             }

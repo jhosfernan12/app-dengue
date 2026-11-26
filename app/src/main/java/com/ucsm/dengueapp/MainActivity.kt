@@ -31,6 +31,7 @@ sealed interface Pantalla {
     data object Mapa : Pantalla
     data object Mosquito : Pantalla
     data object Encuesta : Pantalla
+    data object Galeria : Pantalla
 }
 
 class MainActivity : ComponentActivity() {
@@ -110,7 +111,8 @@ fun AppDengue() {
     }
 
     CompositionLocalProvider(
-        LocalDensity provides Density(densidad.density, fontScale = densidad.fontScale * escala)
+        LocalDensity provides Density(densidad.density, fontScale = densidad.fontScale * escala),
+        LocalNavegacion provides Navegacion(actual = pantalla, ir = { pantalla = it })
     ) {
         if (mostrarCaratula) {
             PantallaCarga(onTerminar = { mostrarCaratula = false })
@@ -162,6 +164,8 @@ fun AppDengue() {
                 )
 
                 Pantalla.Encuesta -> PantallaEncuesta(onVolver = atras)
+
+                Pantalla.Galeria -> PantallaGaleria(onVolver = atras)
             }
         }
     }

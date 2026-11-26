@@ -706,6 +706,7 @@ fun MapaReportes(onVolver: () -> Unit, onChecklist: () -> Unit) {
 
     Scaffold(
         topBar = { BarraSuperior("Mapa comunitario", onVolver) },
+        bottomBar = { BarraInferior() },
         snackbarHost = { SnackbarHost(snackbar) }
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {

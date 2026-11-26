@@ -6,9 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -39,17 +37,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucsm.dengueapp.ui.theme.Azul500
+import com.ucsm.dengueapp.ui.theme.Azul700
+import com.ucsm.dengueapp.ui.theme.AzulMarino
 import com.ucsm.dengueapp.ui.theme.LocalModoOscuro
 import kotlinx.coroutines.delay
 
@@ -59,11 +56,6 @@ const val TITULO_APP =
             "IDENTIFICACIÓN DEL VECTOR TRANSMISOR, MEDIANTE MODELO MACHINE LEARNING"
 
 private const val DURACION_CARATULA_MS = 3500
-
-// Colores propios de la carátula (el resto de la app conserva su paleta original)
-private val CaratulaMarino = Color(0xFF0B3C91)
-private val CaratulaAzul700 = Color(0xFF1565C0)
-private val CaratulaAzul500 = Color(0xFF1E88E5)
 
 /**
  * Carátula que se muestra al abrir la app: fondo azul a pantalla completa, la foto del mosquito
@@ -96,26 +88,14 @@ fun PantallaCarga(onTerminar: () -> Unit) {
     val fondo = if (oscuro) {
         Brush.verticalGradient(listOf(Color(0xFF071A38), Color(0xFF0B2F66)))
     } else {
-        Brush.verticalGradient(listOf(CaratulaMarino, CaratulaAzul700, CaratulaAzul500))
+        Brush.verticalGradient(listOf(AzulMarino, Azul700, Azul500))
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(fondo)
-            .drawBehind {
-                // Dos círculos translúcidos de adorno
-                drawCircle(
-                    Color.White.copy(alpha = 0.08f),
-                    radius = size.minDimension * 0.55f,
-                    center = Offset(size.width * 0.92f, size.height * 0.05f)
-                )
-                drawCircle(
-                    Color.White.copy(alpha = 0.06f),
-                    radius = size.minDimension * 0.35f,
-                    center = Offset(size.width * 0.04f, size.height * 0.85f)
-                )
-            }
+            .burbujas()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -148,17 +128,13 @@ fun PantallaCarga(onTerminar: () -> Unit) {
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(R.drawable.img_mosquito_foto),
-                    contentDescription = "Fotografía de un mosquito Aedes",
-                    contentScale = ContentScale.Crop,
+                FotoCircular(
+                    recurso = R.drawable.img_mosquito_foto,
+                    tamano = 176.dp,
+                    descripcion = "Fotografía de un mosquito Aedes",
                     modifier = Modifier
                         .scale(tamano)
                         .alpha(opacidad)
-                        .size(176.dp)
-                        .shadow(12.dp, CircleShape)
-                        .border(3.dp, Color.White, CircleShape)
-                        .clip(CircleShape)
                 )
             }
 

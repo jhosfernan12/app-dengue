@@ -42,7 +42,7 @@ fun PantallaComparacion(onVolver: () -> Unit) {
             } + ". No se puede asegurar la especie solo mirando. Ante la duda, elimina criaderos y consulta a un establecimiento de salud."
 
     Pagina("Dengue vs. zancudo común", onVolver) {
-        Ilustracion(R.drawable.img_mosquito, "Ilustración de un mosquito Aedes con rayas blancas en las patas")
+        FotoBanner(R.drawable.img_mosquito_foto, "Fotografía de un mosquito Aedes con manchas blancas en el cuerpo y bandas blancas en las patas", pie = "Fíjate en las bandas blancas de las patas")
         Card(
             shape = RoundedCornerShape(18.dp),
             colors = CardDefaults.cardColors(containerColor = c.secondaryContainer)

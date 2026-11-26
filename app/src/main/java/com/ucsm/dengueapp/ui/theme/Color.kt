@@ -4,18 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
-// ---------- Colores fijos (iguales en claro y oscuro) ----------
+// ---------- Paleta azul (iguales en claro y oscuro) ----------
 
-val Teal700 = Color(0xFF0F766E)
-val TealClaro = Color(0xFFCCFBF1)
-val TealOscuro = Color(0xFF134E4A)
+val AzulMarino = Color(0xFF0B3C91)      // barras y degradados oscuros
+val Azul700 = Color(0xFF1565C0)         // color principal
+val Azul500 = Color(0xFF1E88E5)
+val Azul400 = Color(0xFF42A5F5)
+val Cielo = Color(0xFF29B6F6)           // final de los degradados
+val AzulHielo = Color(0xFFE3F0FE)       // fondos de tarjetas suaves
+val AzulNiebla = Color(0xFFF3F8FE)      // fondo de la app
 
-val Azul700 = Color(0xFF0369A1)
-val AzulProfundo = Color(0xFF0C4A6E)
+// ---------- Colores de apoyo ----------
 
 val Ambar600 = Color(0xFFD97706)
 
-val AlertaRoja = Color(0xFFB71C1C)
+val AlertaRoja = Color(0xFFC62828)
 val NaranjaFebril = Color(0xFFEF6C00)
 val VerdeFuerte = Color(0xFF2E7D32)
 
@@ -24,8 +27,8 @@ val NaranjaAcento = Color(0xFFFFA726)
 val RojoAcento = Color(0xFFEF5350)
 val VerdeAcento = Color(0xFF66BB6A)
 
-val FondoApp = Color(0xFFF4F9F8)
-val TextoOscuro = Color(0xFF0F1F1D)
+val FondoApp = AzulNiebla
+val TextoOscuro = Color(0xFF0D1B2E)
 
 // ---------- Colores que cambian según el modo ----------
 
@@ -60,3 +63,8 @@ val AzulClaro: Color
 val AzulOscuro: Color
     @Composable @ReadOnlyComposable
     get() = if (LocalModoOscuro.current) Color(0xFFB3E5FC) else Color(0xFF0C4A6E)
+
+/** Barra superior, barra inferior y degradados: más oscuro en modo oscuro. */
+val AzulBarra: Color
+    @Composable @ReadOnlyComposable
+    get() = if (LocalModoOscuro.current) Color(0xFF0B2347) else AzulMarino

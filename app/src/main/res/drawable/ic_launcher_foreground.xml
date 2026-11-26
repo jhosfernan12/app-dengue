@@ -32,7 +32,7 @@
     <group>
         <clip-path android:pathData="M50,62 a4,10 0 1,0 8,0 a4,10 0 1,0 -8,0 Z" />
         <path
-            android:fillColor="#0F766E"
+            android:fillColor="#0B3C91"
             android:pathData="M45,55.5h18v1.6h-18z M45,60h18v1.6h-18z M45,64.5h18v1.6h-18z M45,69h18v1.6h-18z" />
     </group>
 
