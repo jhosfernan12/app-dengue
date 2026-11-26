@@ -428,7 +428,7 @@ fun PantallaConsentimiento(onVolver: () -> Unit, onAceptar: () -> Unit) {
                 Vineta("Tu ubicación se usa solo dentro de tu teléfono, para abrir el mapa donde estás y buscar reportes cercanos. No se envía ni se guarda.")
                 Vineta("Si reportas un criadero o un mosquito, se envía una zona aproximada (cuadrícula de unos 500 m) marcada por el pin. No se envía tu nombre, tu teléfono ni tu dirección.")
                 Vineta("Para que puedas eliminar tus propios reportes, cada uno queda asociado a un identificador anónimo de tu instalación de la app. Ese identificador no es visible para otros usuarios. Si borras los datos de la app, ya no podrás eliminar los reportes anteriores.")
-                Vineta("Los reportes son avisos de la comunidad y no están confirmados, salvo los marcados como validados por el equipo del proyecto.")
+                Vineta("Los reportes son avisos de la comunidad y no están confirmados, salvo los marcados como validados.")
                 Vineta("Este mapa no es un servicio de emergencia. Si tienes fiebre y signos de alarma, acude a un establecimiento de salud.")
             }
         }
@@ -640,7 +640,7 @@ fun MapaReportes(onVolver: () -> Unit, onChecklist: () -> Unit) {
                 ) {
                     Text(
                         "Solo tú puedes eliminar los reportes que enviaste desde este teléfono. " +
-                                "Los que ya fueron validados por el equipo no se pueden eliminar desde la app.",
+                                "Los reportes ya validados no se pueden eliminar desde la app.",
                         style = MaterialTheme.typography.bodySmall,
                         color = c.onSurfaceVariant
                     )

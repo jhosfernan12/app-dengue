@@ -1,7 +1,9 @@
 package com.ucsm.dengueapp
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +27,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ucsm.dengueapp.ui.theme.Azul700
@@ -114,7 +117,7 @@ fun AvisoCard(texto: String) {
 }
 
 @Composable
-fun Cabecera(titulo: String, subtitulo: String) {
+fun Cabecera(titulo: String, subtitulo: String, @DrawableRes imagen: Int? = null) {
     val oscuro = LocalModoOscuro.current
     val colores = if (oscuro) listOf(TealOscuro, AzulProfundo) else listOf(Teal700, Azul700)
     Box(
@@ -124,18 +127,41 @@ fun Cabecera(titulo: String, subtitulo: String) {
             .background(Brush.linearGradient(colores))
             .padding(20.dp)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                titulo,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Text(
-                subtitulo,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.92f)
-            )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    titulo,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    subtitulo,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.92f)
+                )
+            }
+            if (imagen != null) {
+                Box(
+                    modifier = Modifier
+                        .size(84.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(imagen),
+                        contentDescription = null,
+                        modifier = Modifier.size(66.dp)
+                    )
+                }
+            }
         }
     }
 }

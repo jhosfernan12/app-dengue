@@ -42,6 +42,7 @@ fun PantallaComparacion(onVolver: () -> Unit) {
             } + ". No se puede asegurar la especie solo mirando. Ante la duda, elimina criaderos y consulta a un establecimiento de salud."
 
     Pagina("Dengue vs. zancudo común", onVolver) {
+        Ilustracion(R.drawable.img_mosquito, "Ilustración de un mosquito Aedes con rayas blancas en las patas")
         Card(
             shape = RoundedCornerShape(18.dp),
             colors = CardDefaults.cardColors(containerColor = c.secondaryContainer)
@@ -116,7 +117,7 @@ fun PantallaComparacion(onVolver: () -> Unit) {
         }
 
         Text(
-            "Información educativa general. Debe ser validada por profesionales de salud antes de usarla con participantes.",
+            "Información educativa de carácter general. Ante cualquier duda sobre tu salud, consulta a un profesional de salud.",
             style = MaterialTheme.typography.bodySmall,
             color = c.onSurfaceVariant
         )
@@ -244,7 +245,7 @@ fun PantallaEtapas(onVolver: () -> Unit) {
 
         Text(
             "Las etapas son orientativas: cada persona evoluciona distinto. Solo el personal de salud puede evaluarte. " +
-                    "Información educativa que debe ser validada por profesionales de salud.",
+                    "Esta información es educativa y no reemplaza una consulta médica.",
             style = MaterialTheme.typography.bodySmall,
             color = c.onSurfaceVariant
         )

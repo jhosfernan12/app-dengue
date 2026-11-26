@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
-import android.speech.tts.TextToSpeech
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.Toast
@@ -34,6 +33,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Timeline
@@ -63,7 +63,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.Locale
 import androidx.compose.animation.core.animateFloat
 
 // Teléfono de Infosalud (MINSA). VERIFICAR que siga vigente antes de publicar la app.
@@ -71,71 +70,6 @@ const val TELEFONO_INFOSALUD = "113"
 
 fun textoDe(secciones: List<SeccionInfo>): String =
     secciones.joinToString(". ") { it.titulo + ". " + it.contenido.joinToString(". ") }
-
-// ---------- Lectura en voz alta (accesibilidad) ----------
-
-class Lector(context: Context) {
-    private var listo = false
-    private var tts: TextToSpeech? = null
-
-    init {
-        tts = TextToSpeech(context.applicationContext) { estado ->
-            if (estado == TextToSpeech.SUCCESS) {
-                val motor = tts
-                var r = motor?.setLanguage(Locale("es", "PE")) ?: TextToSpeech.LANG_NOT_SUPPORTED
-                if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    r = motor?.setLanguage(Locale("es")) ?: TextToSpeech.LANG_NOT_SUPPORTED
-                }
-                listo = r != TextToSpeech.LANG_MISSING_DATA && r != TextToSpeech.LANG_NOT_SUPPORTED
-            }
-        }
-    }
-
-    fun hablar(texto: String): Boolean {
-        if (!listo) return false
-        tts?.speak(texto, TextToSpeech.QUEUE_FLUSH, null, "dengue")
-        return true
-    }
-
-    fun parar() {
-        tts?.stop()
-    }
-
-    fun cerrar() {
-        tts?.stop()
-        tts?.shutdown()
-    }
-}
-
-@Composable
-fun BotonEscuchar(texto: String) {
-    val context = LocalContext.current
-    val lector = remember { Lector(context) }
-    var hablando by remember(texto) { mutableStateOf(false) }
-
-    DisposableEffect(texto) { onDispose { lector.parar() } }
-    DisposableEffect(Unit) { onDispose { lector.cerrar() } }
-
-    FilledTonalButton(
-        onClick = {
-            if (hablando) {
-                lector.parar()
-                hablando = false
-            } else if (lector.hablar(texto)) {
-                hablando = true
-            } else {
-                Toast.makeText(
-                    context,
-                    "La lectura en voz alta no está disponible en este teléfono",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(if (hablando) "⏹  Detener lectura" else "🔊  Escuchar esta pantalla")
-    }
-}
 
 // ---------- Inicio ----------
 
@@ -146,10 +80,11 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
     val intro = "Aplicativo educativo. No diagnostica dengue ni reemplaza la evaluación de un profesional de salud. " +
             "Si tienes fiebre y alguna señal de alarma, acude de inmediato a un establecimiento de salud."
 
-    Pagina("DengueApp", null) {
+    Pagina(NOMBRE_APP, null) {
         Cabecera(
             "Aprende y previene el dengue",
-            "Información confiable, prevención en casa y herramientas para tu familia."
+            "Información confiable, prevención en casa y herramientas para tu familia.",
+            imagen = R.drawable.img_mosquito
         )
 
         Card(
@@ -181,28 +116,58 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Baldosa("Información sobre el dengue", Icons.Filled.Info, c.primaryContainer, c.onPrimaryContainer, Modifier.weight(1f)) { onIr(Pantalla.InfoGeneral) }
             Baldosa("Signos de alarma", Icons.Filled.Warning, c.errorContainer, c.onErrorContainer, Modifier.weight(1f)) { onIr(Pantalla.SignosAlarma) }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Baldosa("Etapas de la enfermedad", Icons.Filled.Timeline, c.tertiaryContainer, c.onTertiaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Etapas) }
             Baldosa("Dengue vs. zancudo común", Icons.Filled.BugReport, c.secondaryContainer, c.onSecondaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Comparacion) }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Baldosa("Prevención en el hogar", Icons.Filled.Shield, c.primaryContainer, c.onPrimaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Prevencion) }
             Baldosa("Revisa tu casa", Icons.Filled.Home, c.tertiaryContainer, c.onTertiaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Checklist) }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Baldosa("Videos educativos", Icons.Filled.PlayArrow, c.secondaryContainer, c.onSecondaryContainer, Modifier.weight(1f)) { onIr(Pantalla.ListaVideos) }
             Baldosa("Mi rutina semanal", Icons.Filled.Notifications, c.primaryContainer, c.onPrimaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Rutina) }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Baldosa("Mapa comunitario", Icons.Filled.Place, c.secondaryContainer, c.onSecondaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Mapa) }
             Baldosa("Identificar mosquito (experimental)", Icons.Filled.CameraAlt, c.tertiaryContainer, c.onTertiaryContainer, Modifier.weight(1f)) { onIr(Pantalla.Mosquito) }
         }
 
+        Card(
+            onClick = { onIr(Pantalla.Encuesta) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = c.primaryContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Icon(Icons.Filled.RateReview, contentDescription = null, tint = c.onPrimaryContainer, modifier = Modifier.size(32.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        "Tu opinión nos ayuda a mejorar",
+                        color = c.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        "Responde la encuesta de satisfacción (anónima, 2 minutos)",
+                        color = c.onPrimaryContainer,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
         BotonEscuchar(intro)
+        AyudaVoz()
 
         Card(
             shape = RoundedCornerShape(18.dp),
@@ -313,11 +278,11 @@ fun PantallaOrientacion(onVolver: () -> Unit) {
                         Text(pregunta, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                         Button(
                             onClick = { hayFiebre = true; paso = 1 },
-                            modifier = Modifier.fillMaxWidth().height(56.dp)
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
                         ) { Text("Sí, tengo fiebre") }
                         OutlinedButton(
                             onClick = { hayFiebre = false; paso = 2 },
-                            modifier = Modifier.fillMaxWidth().height(56.dp)
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
                         ) { Text("No tengo fiebre") }
                     }
                 }
@@ -356,7 +321,7 @@ fun PantallaOrientacion(onVolver: () -> Unit) {
                 }
                 Button(
                     onClick = { paso = 2 },
-                    modifier = Modifier.fillMaxWidth().height(56.dp)
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
                 ) { Text(if (marcados.isEmpty()) "No tengo ninguno" else "Ver qué hacer") }
             }
 
@@ -409,11 +374,11 @@ fun PantallaOrientacion(onVolver: () -> Unit) {
                 if (hayFiebre) {
                     Button(
                         onClick = { abrirCentrosDeSalud(context) },
-                        modifier = Modifier.fillMaxWidth().height(56.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
                     ) { Text("Buscar centro de salud cercano") }
                     OutlinedButton(
                         onClick = { llamarInfosalud(context) },
-                        modifier = Modifier.fillMaxWidth().height(56.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
                     ) { Text("Llamar a Infosalud ($TELEFONO_INFOSALUD)") }
                 }
                 TextButton(
@@ -434,6 +399,7 @@ fun PantallaOrientacion(onVolver: () -> Unit) {
 @Composable
 fun PantallaInfoGeneral(onVolver: () -> Unit) {
     Pagina("Información sobre el dengue", onVolver) {
+        Ilustracion(R.drawable.img_mosquito, "Ilustración de un mosquito Aedes, el que transmite el dengue")
         BotonEscuchar(textoDe(Contenido.informacionGeneral))
         SeccionInformativa(Contenido.informacionGeneral)
     }
@@ -442,6 +408,7 @@ fun PantallaInfoGeneral(onVolver: () -> Unit) {
 @Composable
 fun PantallaSignosAlarma(onVolver: () -> Unit) {
     Pagina("Signos de alarma", onVolver) {
+        Ilustracion(R.drawable.img_fiebre, "Ilustración de un termómetro que marca fiebre alta")
         BotonEscuchar(textoDe(Contenido.signosAlarma))
         AvisoCard("Ante cualquier signo de alarma, acude de inmediato a un establecimiento de salud.")
         SeccionInformativa(Contenido.signosAlarma)
@@ -451,6 +418,7 @@ fun PantallaSignosAlarma(onVolver: () -> Unit) {
 @Composable
 fun PantallaPrevencion(onVolver: () -> Unit) {
     Pagina("Prevención en el hogar", onVolver) {
+        Ilustracion(R.drawable.img_criadero, "Ilustración de un balde con agua acumulada, un posible criadero")
         BotonEscuchar(textoDe(Contenido.prevencion))
         SeccionInformativa(Contenido.prevencion)
     }
@@ -522,7 +490,7 @@ fun YouTubeEmbebido(youtubeId: String, modifier: Modifier = Modifier) {
 @Composable
 fun PantallaVideo(video: Video, onVolver: () -> Unit) {
     val context = LocalContext.current
-    LaunchedEffect(video.id) { UsageLog.increment(context, UsageLog.VIDEOS) }
+    LaunchedEffect(video.id) { UsageLog.registrarVideo(context, video.id) }
     Pagina(video.titulo, onVolver) {
         YouTubeEmbebido(
             video.youtubeId,
@@ -602,7 +570,7 @@ fun PantallaChecklist(onVolver: () -> Unit) {
                 Rutina.registrarRevision(context)
                 onVolver()
             },
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
         ) { Text("Guardar revisión") }
     }
 }
@@ -709,7 +677,7 @@ fun TarjetaAlerta(r: Prediccion, onCriaderos: () -> Unit) {
             BarrasConfianza(r, Color.White, Color.White, Color.White.copy(alpha = 0.25f))
             Button(
                 onClick = onCriaderos,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = AlertaRoja)
             ) { Text("Revisar mi casa ahora", fontWeight = FontWeight.Bold) }
             Text(
@@ -817,7 +785,7 @@ fun PantallaMosquito(onVolver: () -> Unit, onChecklist: () -> Unit) {
                     tomarFoto.launch(uri)
                 },
                 enabled = clasificador != null,
-                modifier = Modifier.weight(1f).height(56.dp)
+                modifier = Modifier.weight(1f).heightIn(min = 56.dp)
             ) {
                 Icon(Icons.Filled.CameraAlt, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
@@ -828,7 +796,7 @@ fun PantallaMosquito(onVolver: () -> Unit, onChecklist: () -> Unit) {
                     elegirFoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
                 enabled = clasificador != null,
-                modifier = Modifier.weight(1f).height(56.dp)
+                modifier = Modifier.weight(1f).heightIn(min = 56.dp)
             ) { Text("Galería") }
         }
         bitmap?.let {

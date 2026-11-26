@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -29,6 +30,7 @@ sealed interface Pantalla {
     data object Rutina : Pantalla
     data object Mapa : Pantalla
     data object Mosquito : Pantalla
+    data object Encuesta : Pantalla
 }
 
 class MainActivity : ComponentActivity() {
@@ -81,6 +83,8 @@ class MainActivity : ComponentActivity() {
 fun AppDengue() {
     val context = LocalContext.current
     var pantalla by remember { mutableStateOf<Pantalla>(Pantalla.Inicio) }
+    // La carátula se muestra al abrir la app (y no vuelve a aparecer al girar el teléfono)
+    var mostrarCaratula by rememberSaveable { mutableStateOf(true) }
 
     var escala by remember {
         mutableFloatStateOf(
@@ -101,58 +105,64 @@ fun AppDengue() {
         }
     }
 
-    BackHandler(enabled = pantalla != Pantalla.Inicio) {
+    BackHandler(enabled = !mostrarCaratula && pantalla != Pantalla.Inicio) {
         atras()
     }
 
     CompositionLocalProvider(
         LocalDensity provides Density(densidad.density, fontScale = densidad.fontScale * escala)
     ) {
-        when (val p = pantalla) {
-            Pantalla.Inicio -> PantallaInicio(
-                onIr = { pantalla = it },
-                escala = escala,
-                onEscala = cambiarEscala
-            )
+        if (mostrarCaratula) {
+            PantallaCarga(onTerminar = { mostrarCaratula = false })
+        } else {
+            when (val p = pantalla) {
+                Pantalla.Inicio -> PantallaInicio(
+                    onIr = { pantalla = it },
+                    escala = escala,
+                    onEscala = cambiarEscala
+                )
 
-            Pantalla.Orientacion -> PantallaOrientacion(onVolver = atras)
+                Pantalla.Orientacion -> PantallaOrientacion(onVolver = atras)
 
-            Pantalla.InfoGeneral -> PantallaInfoGeneral(onVolver = atras)
+                Pantalla.InfoGeneral -> PantallaInfoGeneral(onVolver = atras)
 
-            Pantalla.SignosAlarma -> PantallaSignosAlarma(onVolver = atras)
+                Pantalla.SignosAlarma -> PantallaSignosAlarma(onVolver = atras)
 
-            Pantalla.Etapas -> PantallaEtapas(onVolver = atras)
+                Pantalla.Etapas -> PantallaEtapas(onVolver = atras)
 
-            Pantalla.Comparacion -> PantallaComparacion(onVolver = atras)
+                Pantalla.Comparacion -> PantallaComparacion(onVolver = atras)
 
-            Pantalla.Prevencion -> PantallaPrevencion(onVolver = atras)
+                Pantalla.Prevencion -> PantallaPrevencion(onVolver = atras)
 
-            Pantalla.ListaVideos -> PantallaVideos(
-                onAbrir = { pantalla = Pantalla.VerVideo(it) },
-                onVolver = atras
-            )
+                Pantalla.ListaVideos -> PantallaVideos(
+                    onAbrir = { pantalla = Pantalla.VerVideo(it) },
+                    onVolver = atras
+                )
 
-            is Pantalla.VerVideo -> PantallaVideo(
-                video = p.video,
-                onVolver = atras
-            )
+                is Pantalla.VerVideo -> PantallaVideo(
+                    video = p.video,
+                    onVolver = atras
+                )
 
-            Pantalla.Checklist -> PantallaChecklist(onVolver = atras)
+                Pantalla.Checklist -> PantallaChecklist(onVolver = atras)
 
-            Pantalla.Rutina -> PantallaRutina(
-                onVolver = atras,
-                onRevisar = { pantalla = Pantalla.Checklist }
-            )
+                Pantalla.Rutina -> PantallaRutina(
+                    onVolver = atras,
+                    onRevisar = { pantalla = Pantalla.Checklist }
+                )
 
-            Pantalla.Mapa -> PantallaMapa(
-                onVolver = atras,
-                onChecklist = { pantalla = Pantalla.Checklist }
-            )
+                Pantalla.Mapa -> PantallaMapa(
+                    onVolver = atras,
+                    onChecklist = { pantalla = Pantalla.Checklist }
+                )
 
-            Pantalla.Mosquito -> PantallaMosquito(
-                onVolver = atras,
-                onChecklist = { pantalla = Pantalla.Checklist }
-            )
+                Pantalla.Mosquito -> PantallaMosquito(
+                    onVolver = atras,
+                    onChecklist = { pantalla = Pantalla.Checklist }
+                )
+
+                Pantalla.Encuesta -> PantallaEncuesta(onVolver = atras)
+            }
         }
     }
 }

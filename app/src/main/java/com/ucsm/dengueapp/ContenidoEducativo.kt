@@ -31,14 +31,38 @@ data class FilaComparacion(
 
 object Contenido {
 
-    // Agrega aquí tus videos
+    // Videos educativos oficiales de la OPS/OMS (Organización Panamericana de la Salud).
+    // Fuente: https://www.paho.org/es/campanas/semana-accion-contra-mosquitos-2024
+    // Para agregar otro video: copia un bloque Video(...) y cambia id, título, categoría y youtubeId
+    // (el youtubeId es lo que va después de "watch?v=" en el enlace de YouTube).
     val videos = listOf(
         Video(
             id = "v1",
-            titulo = "Video de Enfermería (cambiar por el título real)",
-            categoria = "General",
-            youtubeId = "Tx_Ybpr6OHs",
-            fuente = "Proporcionado por Enfermería (verificar canal y permisos)"
+            titulo = "Síntomas del dengue",
+            categoria = "Síntomas y signos de alarma",
+            youtubeId = "FIEoX4SUtSc",
+            fuente = "OPS/OMS"
+        ),
+        Video(
+            id = "v2",
+            titulo = "Signos de alarma del dengue",
+            categoria = "Síntomas y signos de alarma",
+            youtubeId = "RL-iZcvVh0Q",
+            fuente = "OPS/OMS"
+        ),
+        Video(
+            id = "v3",
+            titulo = "Cuidados del dengue en la casa",
+            categoria = "Cuidados en casa",
+            youtubeId = "6zc6hnkcTDo",
+            fuente = "OPS/OMS"
+        ),
+        Video(
+            id = "v4",
+            titulo = "Diez pasos para eliminar los criaderos de mosquitos y protejamos a nuestra comunidad del dengue",
+            categoria = "Prevención",
+            youtubeId = "_xjWTYRcJ8A",
+            fuente = "OPS/OMS"
         ),
     )
 

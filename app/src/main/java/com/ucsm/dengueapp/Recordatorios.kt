@@ -179,7 +179,7 @@ fun PantallaRutina(onVolver: () -> Unit, onRevisar: () -> Unit) {
         }
         Button(
             onClick = onRevisar,
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
         ) { Text("Hacer mi revisión ahora") }
 
         HorizontalDivider()
