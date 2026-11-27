@@ -171,7 +171,7 @@ fun AppDengue() {
 
                 Pantalla.Sintomas -> PantallaSintomas(onVolver = atras, onIr = { pantalla = it })
 
-                Pantalla.Quiz -> PantallaQuiz(onVolver = atras, onIr = { pantalla = it })
+                Pantalla.Quiz -> PantallaQuiz(onVolver = atras)
             }
         }
     }

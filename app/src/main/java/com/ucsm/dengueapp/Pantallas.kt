@@ -306,7 +306,7 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
                 Baldosa("Videos educativos", "Aprende mirando", Icons.Filled.PlayArrow, Azul500, Modifier.weight(1f)) { onIr(Pantalla.ListaVideos) }
             }
             Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Baldosa("Prueba tus conocimientos", "Preguntas rápidas", Icons.Filled.School, Color(0xFF00838F), Modifier.weight(1f)) { onIr(Pantalla.Quiz) }
+                Baldosa("Prueba tus conocimientos", "Cuestionario en línea", Icons.Filled.School, Color(0xFF00838F), Modifier.weight(1f)) { onIr(Pantalla.Quiz) }
                 Baldosa("Mi rutina semanal", "Recordatorios", Icons.Filled.Notifications, Color(0xFF7E57C2), Modifier.weight(1f)) { onIr(Pantalla.Rutina) }
             }
 
