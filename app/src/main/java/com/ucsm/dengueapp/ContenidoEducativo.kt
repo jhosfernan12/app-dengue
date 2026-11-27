@@ -233,13 +233,4 @@ object Contenido {
         "Usa ropa que cubra brazos y piernas, sobre todo en la mañana y al atardecer.",
         "Elimina el agua acumulada: es donde ambos mosquitos se reproducen."
     )
-
-    // Lista de revisión del hogar (checklist)
-    val checklist = listOf(
-        "Tanques, baldes y ollas con agua" to "Lavar, escobillar y mantener tapados",
-        "Bebederos de mascotas" to "Cambiar el agua y lavar el recipiente",
-        "Floreros y platos de macetas" to "Cambiar el agua y lavar el recipiente",
-        "Llantas" to "Eliminar, voltear o guardar bajo techo",
-        "Botellas, latas y baldes viejos" to "Eliminar o voltear para que no acumulen agua"
-    )
 }

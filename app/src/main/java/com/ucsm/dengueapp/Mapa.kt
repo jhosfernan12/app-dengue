@@ -937,7 +937,7 @@ fun TarjetaCercanos(
                             TextButton(
                                 onClick = onRevisarCasa,
                                 colors = ButtonDefaults.textButtonColors(contentColor = texto)
-                            ) { Text("Revisar mi casa", fontWeight = FontWeight.Bold) }
+                            ) { Text("Control de criadero", fontWeight = FontWeight.Bold) }
                         }
                     }
                 }

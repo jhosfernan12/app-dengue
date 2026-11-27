@@ -45,6 +45,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Healing
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalHospital
@@ -52,6 +53,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Warning
@@ -147,7 +149,7 @@ fun HeroInicio() {
                         color = Color.White.copy(alpha = 0.92f)
                     )
                 }
-                FotoCircular(R.drawable.img_mosquito_foto, 100.dp, "Fotografía de un mosquito Aedes")
+                FotoCircular(R.drawable.img_logo, 100.dp, "Logo de Dengue-Scan: mosquito sobre el mapa del Perú")
             }
         }
     }
@@ -243,7 +245,7 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            "Guía rápida: cuándo acudir al centro de salud",
+                            "Guía rápida: cuándo acudir al centro de salud si sospecho que tengo dengue",
                             color = Color.White.copy(alpha = 0.92f),
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -288,19 +290,23 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
             TituloSeccion("Explora")
 
             Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Baldosa("Información sobre el dengue", "Qué es y síntomas", Icons.Filled.Info, Azul700, Modifier.weight(1f)) { onIr(Pantalla.InfoGeneral) }
-                Baldosa("Signos de alarma", "Cuándo acudir ya", Icons.Filled.Warning, AlertaRoja, Modifier.weight(1f)) { onIr(Pantalla.SignosAlarma) }
+                Baldosa("Información sobre el dengue", "Qué es y cómo se transmite", Icons.Filled.Info, Azul700, Modifier.weight(1f)) { onIr(Pantalla.InfoGeneral) }
+                Baldosa("Síntomas", "Reconócelos en imágenes", Icons.Filled.Healing, Color(0xFFD84315), Modifier.weight(1f)) { onIr(Pantalla.Sintomas) }
             }
             Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Baldosa("Signos de alarma", "Cuándo acudir ya", Icons.Filled.Warning, AlertaRoja, Modifier.weight(1f)) { onIr(Pantalla.SignosAlarma) }
                 Baldosa("Etapas de la enfermedad", "Fiebre, crítica y recuperación", Icons.Filled.Timeline, Color(0xFF5C6BC0), Modifier.weight(1f)) { onIr(Pantalla.Etapas) }
+            }
+            Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Baldosa("Dengue vs. zancudo común", "Cómo diferenciarlos", Icons.Filled.BugReport, Color(0xFF0288D1), Modifier.weight(1f)) { onIr(Pantalla.Comparacion) }
+                Baldosa("Control de criadero", "Identifica zonas de riesgo", Icons.Filled.Checklist, Color(0xFF00897B), Modifier.weight(1f)) { onIr(Pantalla.Checklist) }
             }
             Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Baldosa("Prevención en el hogar", "Elimina los criaderos", Icons.Filled.Shield, VerdeFuerte, Modifier.weight(1f)) { onIr(Pantalla.Prevencion) }
-                Baldosa("Revisa tu casa", "Lista de verificación", Icons.Filled.Checklist, Color(0xFF00897B), Modifier.weight(1f)) { onIr(Pantalla.Checklist) }
+                Baldosa("Videos educativos", "Aprende mirando", Icons.Filled.PlayArrow, Azul500, Modifier.weight(1f)) { onIr(Pantalla.ListaVideos) }
             }
             Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Baldosa("Videos educativos", "Aprende mirando", Icons.Filled.PlayArrow, Azul500, Modifier.weight(1f)) { onIr(Pantalla.ListaVideos) }
+                Baldosa("Prueba tus conocimientos", "Preguntas rápidas", Icons.Filled.School, Color(0xFF00838F), Modifier.weight(1f)) { onIr(Pantalla.Quiz) }
                 Baldosa("Mi rutina semanal", "Recordatorios", Icons.Filled.Notifications, Color(0xFF7E57C2), Modifier.weight(1f)) { onIr(Pantalla.Rutina) }
             }
 
@@ -383,7 +389,7 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
                     Text("Tu actividad", style = MaterialTheme.typography.titleSmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Etiqueta("${UsageLog.get(context, UsageLog.VIDEOS)} videos", c.primaryContainer, c.onPrimaryContainer)
-                        Etiqueta("${UsageLog.get(context, UsageLog.REVISIONES)} revisiones", c.tertiaryContainer, c.onTertiaryContainer)
+                        Etiqueta("${UsageLog.get(context, UsageLog.REVISIONES)} controles", c.tertiaryContainer, c.onTertiaryContainer)
                         Etiqueta("${UsageLog.get(context, UsageLog.FOTOS)} fotos", c.secondaryContainer, c.onSecondaryContainer)
                     }
                 }
@@ -533,7 +539,7 @@ fun PantallaOrientacion(onVolver: () -> Unit) {
                         mensajes = listOf(
                             "Sin fiebre, esta guía no tiene indicaciones para ti.",
                             "Si te sientes mal por cualquier razón, consulta en un establecimiento de salud.",
-                            "Sigue las medidas de prevención: revisa tu casa y elimina los criaderos del mosquito."
+                            "Sigue las medidas de prevención: haz tu control de criadero y elimina el agua acumulada."
                         )
                         fondo = VerdeClaro
                         texto = VerdeOk
@@ -713,73 +719,6 @@ fun PantallaVideo(video: Video, onVolver: () -> Unit) {
     }
 }
 
-// ---------- Revisión del hogar ----------
-
-@Composable
-fun PantallaChecklist(onVolver: () -> Unit) {
-    val context = LocalContext.current
-    val c = MaterialTheme.colorScheme
-    val marcados = remember { mutableStateListOf<Int>() }
-    val total = Contenido.checklist.size
-
-    Pagina("Revisa tu casa", onVolver) {
-        Text(
-            "Marca lo que ya revisaste. Los recipientes con agua acumulada pueden ser posibles criaderos del mosquito.",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Card(
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = c.primaryContainer)
-        ) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    "${marcados.size} de $total revisados",
-                    fontWeight = FontWeight.Bold,
-                    color = c.onPrimaryContainer
-                )
-                LinearProgressIndicator(
-                    progress = { if (total == 0) 0f else marcados.size.toFloat() / total },
-                    modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
-                    color = c.primary,
-                    trackColor = c.surface
-                )
-            }
-        }
-        Contenido.checklist.forEachIndexed { i, (lugar, accion) ->
-            val hecho = i in marcados
-            Card(
-                onClick = { if (hecho) marcados.remove(i) else marcados.add(i) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = if (hecho) VerdeClaro else c.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = hecho,
-                        onCheckedChange = { if (it) marcados.add(i) else marcados.remove(i) }
-                    )
-                    Column(Modifier.weight(1f)) {
-                        Text(lugar, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                        Text(accion, style = MaterialTheme.typography.bodySmall, color = c.onSurfaceVariant)
-                    }
-                }
-            }
-        }
-        Button(
-            onClick = {
-                UsageLog.increment(context, UsageLog.REVISIONES)
-                Rutina.registrarRevision(context)
-                onVolver()
-            },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
-        ) { Text("Guardar revisión") }
-    }
-}
-
 // ---------- Identificar mosquito (IA) ----------
 
 const val UMBRAL = 0.70f
@@ -884,7 +823,7 @@ fun TarjetaAlerta(r: Prediccion, onCriaderos: () -> Unit) {
                 onClick = onCriaderos,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = AlertaRoja)
-            ) { Text("Revisar mi casa ahora", fontWeight = FontWeight.Bold) }
+            ) { Text("Hacer mi control de criadero", fontWeight = FontWeight.Bold) }
             Text(
                 "Resultado orientativo de una función experimental. No es una identificación entomológica ni una notificación oficial.",
                 color = Color.White.copy(alpha = 0.85f),

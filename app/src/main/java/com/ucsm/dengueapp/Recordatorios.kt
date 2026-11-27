@@ -130,8 +130,8 @@ class RecordatorioWorker(contexto: Context, params: WorkerParameters) : Worker(c
         )
         val notificacion = NotificationCompat.Builder(c, CANAL_RECORDATORIOS)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Revisa tu casa esta semana")
-            .setContentText("Lava, escobilla y tapa tus recipientes con agua. ¡Mantén tu racha!")
+            .setContentTitle("Haz tu control de criadero esta semana")
+            .setContentText("Revisa las zonas con agua acumulada: lava, escobilla y tapa. ¡Mantén tu racha!")
             .setContentIntent(pendiente)
             .setAutoCancel(true)
             .build()
@@ -171,8 +171,8 @@ fun PantallaRutina(onVolver: () -> Unit, onRevisar: () -> Unit) {
                 Text("Racha: $racha ${if (racha == 1) "semana" else "semanas"} seguidas",
                     style = MaterialTheme.typography.titleMedium)
                 Text(
-                    if (hecho) "✔ Esta semana ya revisaste tu casa"
-                    else "Esta semana todavía no revisas tu casa",
+                    if (hecho) "✔ Esta semana ya hiciste tu control de criadero"
+                    else "Esta semana todavía no haces tu control de criadero",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -180,7 +180,7 @@ fun PantallaRutina(onVolver: () -> Unit, onRevisar: () -> Unit) {
         Button(
             onClick = onRevisar,
             modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
-        ) { Text("Hacer mi revisión ahora") }
+        ) { Text("Hacer mi control de criadero ahora") }
 
         HorizontalDivider()
 
@@ -231,7 +231,7 @@ fun PantallaRutina(onVolver: () -> Unit, onRevisar: () -> Unit) {
         }
         Text(
             "El aviso llega alrededor de las 9:00. Android puede adelantarlo o retrasarlo unos minutos. " +
-                    "Si ya hiciste tu revisión esa semana, no te molestamos.",
+                    "Si ya hiciste tu control esa semana, no te molestamos.",
             style = MaterialTheme.typography.bodySmall
         )
     }

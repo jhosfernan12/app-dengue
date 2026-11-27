@@ -32,6 +32,8 @@ sealed interface Pantalla {
     data object Mosquito : Pantalla
     data object Encuesta : Pantalla
     data object Galeria : Pantalla
+    data object Sintomas : Pantalla
+    data object Quiz : Pantalla
 }
 
 class MainActivity : ComponentActivity() {
@@ -166,6 +168,10 @@ fun AppDengue() {
                 Pantalla.Encuesta -> PantallaEncuesta(onVolver = atras)
 
                 Pantalla.Galeria -> PantallaGaleria(onVolver = atras)
+
+                Pantalla.Sintomas -> PantallaSintomas(onVolver = atras, onIr = { pantalla = it })
+
+                Pantalla.Quiz -> PantallaQuiz(onVolver = atras, onIr = { pantalla = it })
             }
         }
     }

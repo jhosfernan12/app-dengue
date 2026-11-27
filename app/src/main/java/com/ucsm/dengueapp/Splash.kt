@@ -129,9 +129,9 @@ fun PantallaCarga(onTerminar: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 FotoCircular(
-                    recurso = R.drawable.img_mosquito_foto,
+                    recurso = R.drawable.img_logo,
                     tamano = 176.dp,
-                    descripcion = "Fotografía de un mosquito Aedes",
+                    descripcion = "Logo de Dengue-Scan: mosquito sobre el mapa del Perú",
                     modifier = Modifier
                         .scale(tamano)
                         .alpha(opacidad)
