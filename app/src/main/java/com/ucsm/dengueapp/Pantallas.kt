@@ -307,7 +307,6 @@ fun PantallaInicio(onIr: (Pantalla) -> Unit, escala: Float, onEscala: (Float) ->
             }
             Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Baldosa("Prueba tus conocimientos", "Cuestionario en línea", Icons.Filled.School, Color(0xFF00838F), Modifier.weight(1f)) { onIr(Pantalla.Quiz) }
-                Baldosa("Mi rutina semanal", "Recordatorios", Icons.Filled.Notifications, Color(0xFF7E57C2), Modifier.weight(1f)) { onIr(Pantalla.Rutina) }
             }
 
             TarjetaAncha(
@@ -721,7 +720,8 @@ fun PantallaVideo(video: Video, onVolver: () -> Unit) {
 
 // ---------- Identificar mosquito (IA) ----------
 
-const val UMBRAL = 0.70f
+/** El modelo debe estar al menos 60 % seguro para dar una respuesta; si no, se pide otra foto. */
+const val UMBRAL = 0.60f
 
 fun nuevaUriFoto(context: Context): Uri {
     val carpeta = File(context.cacheDir, "fotos").apply { mkdirs() }
@@ -741,34 +741,8 @@ fun cargarBitmap(context: Context, uri: Uri): Bitmap {
     }
 }
 
-/** Alerta roja: el modelo cree que es Aedes y con suficiente confianza. */
+/** Alerta roja: el modelo cree que es Aedes (probable) con suficiente seguridad. */
 fun esAlertaAedes(p: Prediccion): Boolean = p.etiqueta == "Aedes" && p.confianza >= UMBRAL
-
-fun nombreAmigable(etiqueta: String): String = when (etiqueta) {
-    "Aedes" -> "Aedes"
-    "OtroMosquito" -> "Otro mosquito"
-    "Otro" -> "No es un mosquito"
-    else -> etiqueta
-}
-
-@Composable
-fun BarrasConfianza(r: Prediccion, colorTexto: Color, colorBarra: Color, colorPista: Color) {
-    r.todas.forEach { (nombre, p) ->
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                "${nombreAmigable(nombre)}: ${(p * 100).toInt()}%",
-                color = colorTexto,
-                style = MaterialTheme.typography.bodySmall
-            )
-            LinearProgressIndicator(
-                progress = { p.coerceIn(0f, 1f) },
-                modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                color = colorBarra,
-                trackColor = colorPista
-            )
-        }
-    }
-}
 
 @Composable
 fun TarjetaAlerta(r: Prediccion, onCriaderos: () -> Unit) {
@@ -793,7 +767,7 @@ fun TarjetaAlerta(r: Prediccion, onCriaderos: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Icon(Icons.Filled.Warning, contentDescription = null, tint = Color.White, modifier = Modifier.size(38.dp))
                 Text(
-                    "ALERTA: POSIBLE AEDES",
+                    "SÍ: ES PROBABLE QUE SEA UN AEDES",
                     modifier = Modifier.weight(1f),
                     color = Color.White,
                     fontWeight = FontWeight.ExtraBold,
@@ -813,12 +787,6 @@ fun TarjetaAlerta(r: Prediccion, onCriaderos: () -> Unit) {
             Vineta("Revisa y elimina posibles criaderos en tu casa.", Color.White)
             Vineta("Protégete de las picaduras con mosquitero o repelente.", Color.White)
             Vineta("Si tú o alguien de tu casa tiene fiebre, acude a un establecimiento de salud.", Color.White)
-            Text(
-                "Confianza del modelo: ${(r.confianza * 100).toInt()}%",
-                color = Color.White,
-                style = MaterialTheme.typography.labelLarge
-            )
-            BarrasConfianza(r, Color.White, Color.White, Color.White.copy(alpha = 0.25f))
             Button(
                 onClick = onCriaderos,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
@@ -836,14 +804,20 @@ fun TarjetaAlerta(r: Prediccion, onCriaderos: () -> Unit) {
 @Composable
 fun TarjetaNormal(r: Prediccion) {
     val c = MaterialTheme.colorScheme
-    val otroMosquito = r.etiqueta == "OtroMosquito" && r.confianza >= UMBRAL
+    val seguro = r.confianza >= UMBRAL
+    val otroMosquito = seguro && r.etiqueta == "OtroMosquito"
+    val noEsMosquito = seguro && r.etiqueta == "Otro"
     val fondo = if (otroMosquito) AmbarClaro else c.surfaceVariant
     val texto = if (otroMosquito) AmbarOscuro else c.onSurfaceVariant
-    val titulo = if (otroMosquito) "Posible mosquito de otro género" else "Imagen no concluyente"
-    val mensaje = if (otroMosquito) {
-        "El modelo lo reconoce como un mosquito que no parece Aedes, pero esto no es una confirmación. Mantén las medidas de prevención."
-    } else {
-        "No se pudo reconocer un mosquito con suficiente seguridad. Intenta otra foto: más cerca, con buena luz y fondo claro."
+    val titulo = when {
+        otroMosquito -> "NO: no parece un Aedes"
+        noEsMosquito -> "NO: no es un mosquito"
+        else -> "No se pudo saber"
+    }
+    val mensaje = when {
+        otroMosquito -> "Parece otro tipo de mosquito. Aun así, mantén las medidas de prevención."
+        noEsMosquito -> "La imagen no parece mostrar un mosquito. Si quieres, prueba con otra foto."
+        else -> "La foto no es lo bastante clara. Intenta otra: más cerca, con buena luz y fondo claro."
     }
 
     Card(
@@ -852,14 +826,8 @@ fun TarjetaNormal(r: Prediccion) {
         colors = CardDefaults.cardColors(containerColor = fondo)
     ) {
         Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(titulo, color = texto, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+            Text(titulo, color = texto, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
             Text(mensaje, color = texto)
-            Text(
-                "Confianza del modelo: ${(r.confianza * 100).toInt()}%",
-                color = texto,
-                style = MaterialTheme.typography.labelLarge
-            )
-            BarrasConfianza(r, texto, c.primary, c.surface)
             Text(
                 "Resultado orientativo de una función experimental. No es una identificación entomológica ni una notificación oficial.",
                 color = texto,

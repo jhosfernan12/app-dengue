@@ -209,7 +209,6 @@ fun PantallaChecklist(onVolver: () -> Unit) {
         Button(
             onClick = {
                 UsageLog.increment(context, UsageLog.REVISIONES)
-                Rutina.registrarRevision(context)
                 onVolver()
             },
             modifier = Modifier

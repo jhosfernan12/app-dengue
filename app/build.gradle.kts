@@ -12,8 +12,8 @@ android {
         applicationId = "com.ucsm.dengueapp"
         minSdk = 28
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.7"
+        versionCode = 11
+        versionName = "1.9.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,8 +55,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
 
-    // Recordatorios semanales
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
 
     // Modelo de imágenes (TFLite). Usar LiteRT, NO org.tensorflow:tensorflow-lite
     implementation("com.google.ai.edge.litert:litert:1.4.2")
@@ -66,6 +64,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("org.osmdroid:osmdroid-android:6.1.20")
+    // Carga de fotos desde internet (fotos del zancudo común, CDC)
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Debug
     debugImplementation(libs.androidx.ui.tooling)

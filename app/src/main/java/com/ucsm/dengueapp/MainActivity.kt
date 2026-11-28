@@ -27,7 +27,6 @@ sealed interface Pantalla {
     data object ListaVideos : Pantalla
     data class VerVideo(val video: Video) : Pantalla
     data object Checklist : Pantalla
-    data object Rutina : Pantalla
     data object Mapa : Pantalla
     data object Mosquito : Pantalla
     data object Encuesta : Pantalla
@@ -149,11 +148,6 @@ fun AppDengue() {
                 )
 
                 Pantalla.Checklist -> PantallaChecklist(onVolver = atras)
-
-                Pantalla.Rutina -> PantallaRutina(
-                    onVolver = atras,
-                    onRevisar = { pantalla = Pantalla.Checklist }
-                )
 
                 Pantalla.Mapa -> PantallaMapa(
                     onVolver = atras,
